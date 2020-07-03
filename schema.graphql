@@ -1,0 +1,152 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+interface IResourceDto {
+    createdAt: DateTime!
+    id: ID!
+    updatedAt: DateTime!
+}
+
+type DeviceDto implements IResourceDto {
+    brand: String!
+    createdAt: DateTime!
+    date: DateTime!
+    id: ID!
+    status: String!
+    uid: Float!
+    updatedAt: DateTime!
+}
+
+type GatewayDto implements IResourceDto {
+    createdAt: DateTime!
+    devices: [String!]!
+    devicesObjects: [DeviceDto!]!
+    id: ID!
+    ipv4: Ipv4Dto!
+    name: String!
+    serialNumber: String!
+    updatedAt: DateTime!
+}
+
+type Ipv4Dto {
+    validated: Boolean!
+    value: String!
+}
+
+type Mutation {
+    createDevice(input: DeviceInput!): DeviceDto
+    createGateway(input: GatewayInput!): GatewayDto
+    deleteDevice(id: ID!): DeviceDto
+    deleteGateway(id: ID!): GatewayDto
+    updateDevice(id: ID!, input: DeviceUpdate!): DeviceDto
+    updateGateway(id: ID!, input: GatewayUpdate!): GatewayDto
+}
+
+type PaginatedDeviceResponse {
+    hasMore: Boolean!
+    items: [DeviceDto!]!
+    total: Int!
+}
+
+type PaginatedGatewayResponse {
+    hasMore: Boolean!
+    items: [GatewayDto!]!
+    total: Int!
+}
+
+type Query {
+    filterDevices(filter: DeviceFilterInput = {}, limit: Int = 10, skip: Int = 0): PaginatedDeviceResponse!
+    filterGateways(filter: GatewayFilterInput = {}, limit: Int = 10, skip: Int = 0): PaginatedGatewayResponse!
+    getDevice(id: ID!): DeviceDto
+    getDevices(limit: Int, skip: Int): PaginatedDeviceResponse!
+    getGateway(id: ID!): GatewayDto
+    getGateways(limit: Int, skip: Int): PaginatedGatewayResponse!
+}
+
+input DeviceFilterInput {
+    brand: QueryFilterStringDto
+    date: QueryFilterDateDto
+    id: QueryFilterIdDto
+    search: String
+    status: QueryFilterStringDto
+    uid: QueryFilterNumberDto
+}
+
+input DeviceInput {
+    brand: String!
+    status: String!
+    uid: Float!
+}
+
+input DeviceUpdate {
+    brand: String
+    status: String
+    uid: Float
+}
+
+input GatewayFilterInput {
+    id: QueryFilterIdDto
+    ipv4: QueryFilterStringDto
+    search: String
+}
+
+input GatewayInput {
+    devices: [String!]!
+    ipv4: Ipv4Input!
+    name: String!
+    serialNumber: String!
+}
+
+input GatewayUpdate {
+    devices: [String!]
+    ipv4: Ipv4Update
+    name: String
+    serialNumber: String
+}
+
+input Ipv4Input {
+    validated: Boolean
+    value: String!
+}
+
+input Ipv4Update {
+    validated: Boolean
+    value: String
+}
+
+input QueryFilterDateDto {
+    eq: DateTime
+    gt: DateTime
+    gte: DateTime
+    in: [DateTime!]
+    lt: DateTime
+    lte: DateTime
+}
+
+input QueryFilterIdDto {
+    eq: String
+    in: [String!]
+}
+
+input QueryFilterNumberDto {
+    eq: Float
+    gt: Float
+    gte: Float
+    in: [Int!]
+    lt: Float
+    lte: Float
+}
+
+input QueryFilterStringDto {
+    eq: String
+    in: [String!]
+    regex: String
+}
+
+
+"A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format."
+scalar DateTime
