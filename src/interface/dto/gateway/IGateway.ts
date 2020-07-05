@@ -1,4 +1,5 @@
 import {IEntity} from "../IEntity";
+import {IDevice} from "../device/IDevice";
 
 export interface IGateway extends IEntity {
   serialNumber: string;
@@ -8,4 +9,5 @@ export interface IGateway extends IEntity {
     validated: boolean,
   };
   devices: string[];
+  devicesObjects: IDevice[];
 }

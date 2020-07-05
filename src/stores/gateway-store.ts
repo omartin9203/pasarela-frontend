@@ -51,7 +51,11 @@ export class GatewaysStore extends DataStore<IGateway, IGatewayInput, IGatewayUp
   }
 
   async filterGateway(filter: any = {}, skip = 0, limit = 10) {
-    return await this.dispatchAsync(this.ENTITY_FILTER as string, this._service.filter(filter, skip, limit));
+    try {
+      await this.dispatchAsync(this.ENTITY_FILTER as string, this._service.filter(filter, skip, limit));
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 

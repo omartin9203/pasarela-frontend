@@ -1,37 +1,36 @@
 import {connect} from "redux-scaffolding-ts";
-import {GatewaysStore} from "../../stores/gateway-store";
 import * as React from "react"
 import {IQuery} from "../../interface/IQuery";
 import autobind from "autobind-decorator";
 import {IPaginateResponse} from "../../interface/dto/IPaginateResponse";
-import {IGateway} from "../../interface/dto/gateway/IGateway";
-import GatewayItem from "../../components/gateway/GatewayItem";
 import {RouteComponentProps, withRouter} from "react-router";
-import {IGatewayInput} from "../../interface/dto/gateway/IGatewayInput";
 import {Alert, Col, Modal, Row, Spin, Button, Checkbox, Tag, Table, Popconfirm, Divider, Typography, Input} from "antd";
 import {IDevice} from "../../interface/dto/device/IDevice";
-import {DeleteTwoTone, EditTwoTone} from "@material-ui/icons";
+import {DevicesStore} from "../../stores/device-store";
+import DeviceItem from "../../components/device/DeviceItem";
+import {IDeviceInput} from "../../interface/dto/device/IDeviceInput";
+import {IGateway} from "../../interface/dto/gateway/IGateway";
 
-interface GatewaysViewProps extends RouteComponentProps {
+interface DevicesViewProps extends RouteComponentProps {
 
 }
-interface GatewaysViewState {
+interface DevicesViewState {
   query: IQuery<any>;
   showNew: boolean;
-  itemToEdit?: IGateway;
+  itemToEdit?: IDevice;
   activePage: number;
 }
 
-@connect(["Gateways", GatewaysStore])
-class GatewayListView extends React.Component<
-  GatewaysViewProps,
-  GatewaysViewState
+@connect(["Devices", DevicesStore])
+class DeviceListView extends React.Component<
+  DevicesViewProps,
+  DevicesViewState
   > {
   private get store() {
-    return (this.props as any).Gateways as GatewaysStore;
+    return (this.props as any).Devices as DevicesStore;
   }
 
-  constructor(props: GatewaysViewProps) {
+  constructor(props: DevicesViewProps) {
     super(props);
     this.state = {
       query: {
@@ -42,7 +41,7 @@ class GatewayListView extends React.Component<
       },
       showNew: false,
       activePage: 1
-    } as GatewaysViewState;
+    } as DevicesViewState;
   }
 
   componentWillMount() {
@@ -51,11 +50,11 @@ class GatewayListView extends React.Component<
 
   @autobind
   private load() {
-    return this.store.filterGateway({search: this.state.query.search}, this.state.query.skip, this.state.query.limit);
+    return this.store.filterDevice({search: this.state.query.search}, this.state.query.skip, this.state.query.limit);
   }
 
   // @autobind
-  // private async onSaveItem(item: IGatewayInput) {
+  // private async onSaveItem(item: IDeviceInput) {
   //   var result = await this.OtherExpensesStore.saveAsync(
   //     `${item.id}`,
   //     item,
@@ -83,7 +82,7 @@ class GatewayListView extends React.Component<
   }
 
   @autobind
-  private onShowItemModal(item: IGateway) {
+  private onShowItemModal(item: IDevice) {
     this.setState({ showNew: true, itemToEdit: item });
   }
 
@@ -106,23 +105,20 @@ class GatewayListView extends React.Component<
 
   getItemModal() {
     return (
-      <GatewayItem
+      <DeviceItem
         item={this.state.itemToEdit ?? this.newItem}
         mode={this.state.itemToEdit ? 'edit' : 'new'}
         onSave={this.onSave}
         onCancel={this.onCancelItemModal}
       />
-      )
+    )
   }
 
-  get newItem(): IGatewayInput {
+  get newItem(): IDeviceInput {
     return {
-      name: "",
-      ipv4: {
-        value: "",
-      },
-      serialNumber: "",
-      devices: []
+      status: "active",
+      brand: "",
+      uid: ((this.store.state.data?.result as IPaginateResponse<IDevice>).total  ?? 0) + 1,
     }
   }
 
@@ -154,55 +150,40 @@ class GatewayListView extends React.Component<
   }
 
   public render() {
-    const style = { padding: '8px 8px 8px 8px' };
     const onDelete = this.onDeleteRow;
     const columns = [
       {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
+        title: 'UID',
+        dataIndex: 'uid',
+        key: 'uid',
       },
       {
-        title: 'Serial Number',
-        dataIndex: 'serialNumber',
-        key: 'serialNumber',
+        title: 'Brand',
+        dataIndex: 'brand',
+        key: 'brand',
       },
       {
-        title: 'IPv4 Value',
-        dataIndex: 'ipv4.value',
-        key: 'ipv4.value',
-      },
-      {
-        title: 'IPv4 Validated',
-        key: 'ipv4.validated',
-        dataIndex: 'ipv4.validated',
-        render: (value: boolean) => (
-          <Checkbox checked={value}></Checkbox>
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        render: (value: "active"|"inactive") => (
+          <Tag color={value === "inactive" ? "#f50" : "#87d068"}>{value}</Tag>
         ),
       },
       {
-        title: 'Devices',
-        key: 'devicesObjects',
-        dataIndex: 'devicesObjects',
-        render: (value: IDevice[]) => {
-          return <span>
-            {
-              value.map((device) => (
-                  <Tag color={'green'} key={device.id}>
-                    {device.uid}
-                  </Tag>
-                )
-              )
-            }
-          </span>
-        },
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+        render: (value: any) => (
+          <span>{value.toString().slice(0, 10)}</span>
+        ),
       },
       {
         title: 'Action',
         key: 'operation',
         width: 100,
         fixed: 'right' as "right",
-        render: (text: any, item: IGateway) => (
+        render: (text: any, item: IDevice) => (
           <span>
             <Button
               type="primary"
@@ -231,13 +212,13 @@ class GatewayListView extends React.Component<
       pageSize: this.state.query.limit,
       showTotal: (total: number, range: any) => `${range[0]} ${'to'} ${range[1]} ${'of'} ${total}`,
       current: this.state.activePage,
-      total: (this.store.state.data!.result as IPaginateResponse<IGateway>).total,
+      total: (this.store.state.data!.result as IPaginateResponse<IDevice>).total,
     };
     return (
       <Row type="flex" justify="center" align="middle">
         <Col style={{padding: '25px'}} span={18}>
           <Row type="flex" justify="center" style={{paddingBottom: '25px', width: '100%' }}>
-            <Typography.Title level={2} >Gategaway</Typography.Title>
+            <Typography.Title level={2} >Devices</Typography.Title>
           </Row>
           <Spin spinning={this.store.state.isBusy}>
             <Col>
@@ -266,7 +247,7 @@ class GatewayListView extends React.Component<
                     <Table
                       columns={columns}
                       rowKey={record => record.id}
-                      dataSource={(this.store.state.data!.result as IPaginateResponse<IGateway>).items}
+                      dataSource={(this.store.state.data!.result as IPaginateResponse<IDevice>).items}
                       pagination={pagination}
                     />
                   </Col>
@@ -285,4 +266,4 @@ class GatewayListView extends React.Component<
   }
 }
 
-export default (withRouter(GatewayListView) as any);
+export default (withRouter(DeviceListView) as any);

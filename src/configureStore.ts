@@ -4,6 +4,7 @@ import { History } from 'history';
 import { storeBuilder } from 'redux-scaffolding-ts';
 import {configReducer} from "./stores/core/reducers";
 import {GatewaysStore, GatewayStore} from "./stores/gateway-store";
+import {DevicesStore, DevicesStoreSelector, DeviceStore} from "./stores/device-store";
 
 export default function configureStore(history: History, initialState?: any) {
   // If devTools is installed, connect to it
@@ -24,6 +25,10 @@ export default function configureStore(history: History, initialState?: any) {
   // Add repositories
   storeBuilder.addRepository(new GatewaysStore() as any);
   storeBuilder.addRepository(new GatewayStore() as any);
+
+  storeBuilder.addRepository(new DevicesStore() as any);
+  storeBuilder.addRepository(new DeviceStore() as any);
+  storeBuilder.addRepository(new DevicesStoreSelector() as any);
 
   // Combine all reducers and instantiate the app-wide store instance
   const store = storeBuilder.getStore(initialState,

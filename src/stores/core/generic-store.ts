@@ -146,26 +146,45 @@ export abstract class DataStore<T extends any, Tinput, Tupdate> extends ReduxRep
     }, 'AsyncAction');
   }
 
-  public async getAllAsync(skip = 0, limit: 10): Promise<IPaginateResponse<T>> {
-    const result = await this.dispatchAsync(this.ENTITY_GET_ALL as string, this.service.getAll(skip, limit));
-    return result;
+  public async getAllAsync(skip = 0, limit: 10) {
+    try {
+      await this.dispatchAsync(this.ENTITY_GET_ALL as string, this.service.getAll(skip, limit));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  public async deleteAsync(id: string): Promise<T> {
-    const result = await this.dispatchAsync(this.ENTITY_DELETED as string, this.service.delete(id));
-    return result;
+  public async deleteAsync(id: string) {
+    try {
+      await this.dispatchAsync(this.ENTITY_DELETED as string, this.service.delete(id));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  public async getByIdAsync(id: string): Promise<T> {
-    const result = await this.dispatchAsync(this.ENTITY_GET_BY_ID as string, this.service.getOne(id));
-    return result;
+  public async getByIdAsync(id: string) {
+    try {
+      await this.dispatchAsync(this.ENTITY_GET_BY_ID as string, this.service.getOne(id));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  public createAsync(input: Tinput): Promise<T> {
-    return this.dispatchAsync(this.ENTITY_CREATED as string, this.service.create(input));
+  public async createAsync(input: Tinput): Promise<T | undefined> {
+    try {
+      return await this.dispatchAsync(this.ENTITY_CREATED as string, this.service.create(input));
+    } catch (e) {
+      console.log(e);
+      return undefined
+    }
   }
 
-  public updateAsync(id: string, input: Tupdate): Promise<T> {
-    return this.dispatchAsync(this.ENTITY_UPDATED as string, this.service.update(id, input));
+  public async updateAsync(id: string, input: Tupdate) {
+    try {
+      return await this.dispatchAsync(this.ENTITY_UPDATED as string, this.service.update(id, input));
+    } catch (e) {
+      console.log(e);
+      return undefined;
+    }
   }
 }

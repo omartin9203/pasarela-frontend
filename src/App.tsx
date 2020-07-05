@@ -1,7 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {Devices} from "./views/Devices";
 import {
   BrowserRouter as Router,
   Switch,
@@ -9,9 +8,9 @@ import {
   Link, RouteComponentProps, withRouter
 } from "react-router-dom";
 import GatewayListView from "./views/gateway/gateway-list";
+import DeviceListView from "./views/devices/device-list"
 import {
   AppBar,
-  Button,
   createStyles,
   IconButton,
   Theme,
@@ -109,7 +108,7 @@ class App extends React.Component<AppProps,AppState> {
             </div>
           </Route>
           <Route exact path={`/gateways`} component={GatewayListView} />
-          <Route exact path={`/devices`} component={Devices} />
+          <Route exact path={`/devices`} component={DeviceListView} />
         </Switch>
       </Router>
     )
